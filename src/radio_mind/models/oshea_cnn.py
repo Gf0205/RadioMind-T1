@@ -31,6 +31,22 @@ class OsheaCNN2(nn.Module):
         self.relu3 = nn.ReLU()
         self.dropout3 = nn.Dropout(dropout)
         self.dense2 = nn.Linear(256, num_classes)
+        self._initialize_parameters()
+
+    def _initialize_parameters(self) -> None:
+        """Apply the initialization strategy used by the VT-CNN2 reference."""
+        for layer in (self.conv1, self.conv2):
+            nn.init.xavier_uniform_(layer.weight)
+            if layer.bias is not None:
+                nn.init.zeros_(layer.bias)
+        for layer in (self.dense1, self.dense2):
+            nn.init.kaiming_normal_(
+                layer.weight,
+                mode="fan_in",
+                nonlinearity="relu",
+            )
+            if layer.bias is not None:
+                nn.init.zeros_(layer.bias)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         if x.ndim != 3 or tuple(x.shape[1:]) != self.input_shape:
