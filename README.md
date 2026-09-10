@@ -87,10 +87,11 @@ To fetch the artifacts, run locally from a RadioMind checkout:
 
 ```bash
 export REMOTE_HOST=root@<instance>
+export REMOTE_PORT=<ssh-port>
 export REMOTE_ROOT=/root/autodl-tmp/RadioMind
 bash scripts/fetch_results.sh <run_id>
 ```
 
-Each formal run reports full-test overall accuracy, accuracy for SNR ≥ 0 dB, per-SNR accuracy, a normalized confusion matrix, macro-F1, and per-class F1. The expected full-SNR literature band is 80.5–87%; a score outside it calls for a split/model audit before tuning. Validation is used only for early stopping and is never reported as test performance.
+Each formal run reports full-test overall accuracy, accuracy for SNR ≥ 0 dB, per-SNR accuracy, a normalized confusion matrix, macro-F1, and per-class F1. For this fixed RML2016.10a protocol, the accepted T1 CNN2 baseline is approximately 51.5% overall accuracy, 74.3% accuracy for SNR ≥ 0 dB, and a 74–76% high-SNR plateau. The former 80.5–87% value is not used as an overall-accuracy acceptance threshold because it refers to non-equivalent evaluation settings. Validation is used only for early stopping and is never reported as test performance. This is a paper-aligned PyTorch CNN2 baseline, not a bit-exact Keras reproduction.
 
 T1 intentionally excludes RF-Net multitask learning, augmentation, normalization ablations, OOD/rejection, calibration, LoRA/SFT/GRPO, MiniMind integration, strict split, SDR data, and RML2018.01a.
