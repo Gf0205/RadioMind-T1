@@ -1,0 +1,12 @@
+experiment: t2_frozen_snr_probe
+data_root: ./data
+split_seed: 20260907
+normalization: none
+t1_checkpoint: results/20260910_151052_oshea/checkpoints/best.pt
+seed: 20260907
+device: auto
+batch_size: 512
+lr: 0.001
+max_epochs: 30
+patience: 5
+target_scale_db: 20.0
