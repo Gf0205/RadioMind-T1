@@ -318,7 +318,7 @@ def main() -> None:
             if not encoder_grad_none or not head_grad_nonzero_finite:
                 raise RuntimeError("frozen encoder or SNR-head gradient contract failed")
             optimizer.step()
-            train_squared_error += float(loss) * len(z)
+            train_squared_error += loss.detach().item() * len(z)
             train_seen += len(z)
         if train_seen == 0:
             raise RuntimeError("empty train feature loader")
