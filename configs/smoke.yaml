@@ -1,0 +1,20 @@
+run_mode: smoke
+data:
+  data_root: ./data
+  split_seed: 20260907
+  normalize: none
+  num_workers: 0
+model:
+  name: oshea_cnn2
+  dropout: 0.6
+train:
+  seed: 20260907
+  batch_size: 64
+  lr: 0.001
+  epochs: 1
+  patience: 1
+  scheduler: none
+  device: auto
+  num_workers: 0
+  pin_memory: false
+  deterministic: true
