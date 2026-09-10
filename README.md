@@ -66,10 +66,12 @@ scp RML2016.10a_dict.pkl root@<instance>:/root/autodl-tmp/
 # On AutoDL
 git clone <repo> && cd RadioMind
 # Keep the CUDA-enabled Torch already supplied by the image.
-python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
 pip install -r requirements.txt
 export DATA_ROOT=/root/autodl-tmp
 export PYTHONPATH=src
+nvidia-smi
+python scripts/check_cuda.py
+git rev-parse HEAD
 python scripts/train.py --smoke
 
 # Only after smoke passes: full data, three epochs, explicitly tagged sanity.
