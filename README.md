@@ -95,3 +95,41 @@ bash scripts/fetch_results.sh <run_id>
 Each formal run reports full-test overall accuracy, accuracy for SNR ≥ 0 dB, per-SNR accuracy, a normalized confusion matrix, macro-F1, and per-class F1. For this fixed RML2016.10a protocol, the accepted T1 CNN2 baseline is approximately 51.5% overall accuracy, 74.3% accuracy for SNR ≥ 0 dB, and a 74–76% high-SNR plateau. The former 80.5–87% value is not used as an overall-accuracy acceptance threshold because it refers to non-equivalent evaluation settings. Validation is used only for early stopping and is never reported as test performance. This is a paper-aligned PyTorch CNN2 baseline, not a bit-exact Keras reproduction.
 
 T1 intentionally excludes RF-Net multitask learning, augmentation, normalization ablations, OOD/rejection, calibration, LoRA/SFT/GRPO, MiniMind integration, strict split, SDR data, and RML2018.01a.
+
+## RF-Net v1 inference
+
+RF-Net v1 exposes a shared representation with two task heads:
+
+```text
+I/Q waveform
+     ↓
+shared RFEncoder
+     ├── modulation classification
+     └── SNR estimation
+```
+
+The SNR auxiliary task showed neutral transfer on modulation classification under matched training budgets, while providing useful SNR estimation capability. The reported softmax value is named `modulation_probability`; it is not calibrated confidence.
+
+The inference interface accepts exactly `(2,128)` or `(B,2,128)` I/Q arrays. It does not transpose input or alter amplitude, and the deployed C checkpoint uses `normalization=none`. The versioned deployment metadata binds the architecture and training contract to the exact checkpoint hash.
+
+```python
+from radio_mind.inference import RFAnalyzer
+
+analyzer = RFAnalyzer.from_checkpoint(
+    "results/20260910_195742_t2_multitask_control/C_multitask/checkpoints/best.pt",
+    metadata="configs/rfnet_v1_deployment.yaml",
+    device="auto",
+)
+result = analyzer.analyze_iq(iq)
+```
+
+The thin CLI emits JSON:
+
+```bash
+python scripts/analyze_iq.py \
+  --checkpoint results/20260910_195742_t2_multitask_control/C_multitask/checkpoints/best.pt \
+  --input sample.npy \
+  --device auto
+```
+
+RF-Net v1 does not claim calibrated confidence, SOTA performance, or improved modulation accuracy from multitask training. MiniMind, serving frameworks, OOD rejection, and calibration remain outside T2.4.

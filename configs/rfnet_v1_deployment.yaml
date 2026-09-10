@@ -1,0 +1,25 @@
+deployment_schema_version: 1
+model_type: RFNet
+architecture_version: rfnet_v1
+modulation_classes:
+  - 8PSK
+  - AM-DSB
+  - AM-SSB
+  - BPSK
+  - CPFSK
+  - GFSK
+  - PAM4
+  - QAM16
+  - QAM64
+  - QPSK
+  - WBFM
+snr_scale_db: 20.0
+normalization: none
+source_git_commit: 8d12154fc613a3e68fad7a02c38afd6752e07c6e
+source_run_id: 20260910_195742_t2_multitask_control
+training_arm: multitask
+snr_lambda: 0.1
+dropout: 0.6
+input_shape: [2, 128]
+channel_order: [I, Q]
+checkpoint_sha256: ebb660780543fa4e47a4c5d4f9c06817edbfb11a01898874d35ded3d2e47ed1a
