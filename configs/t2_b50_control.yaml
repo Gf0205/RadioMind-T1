@@ -1,0 +1,16 @@
+experiment: t2_b50_matched_budget
+source_control_run: results/20260910_195742_t2_multitask_control
+data_root: ./data
+split_seed: 20260907
+normalization: none
+seed: 20260907
+device: cuda
+dropout: 0.6
+batch_size: 512
+lr: 0.001
+epochs: 50
+patience: 8
+scheduler: cosine
+target_scale_db: 20.0
+snr_lambda: 0.1
+early_stopping: false

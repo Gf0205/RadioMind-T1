@@ -72,6 +72,7 @@ def fit_rfnet_control(
     patience: int,
     checkpoint_dir: str | Path,
     initial_state_hash: str,
+    enable_early_stopping: bool = True,
 ) -> dict:
     """Train one arm, selecting checkpoints only by validation modulation accuracy."""
     if snr_lambda < 0.0 or target_scale_db <= 0.0:
@@ -181,7 +182,7 @@ def fit_rfnet_control(
         if improved:
             atomic_torch_save(state, checkpoint_dir / "best.pt")
         atomic_torch_save(state, checkpoint_dir / "last.pt")
-        if stale_epochs >= patience:
+        if enable_early_stopping and stale_epochs >= patience:
             break
 
     return {
