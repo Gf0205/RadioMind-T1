@@ -17,6 +17,7 @@ The default preprocessing is `none`. `global` uses training-only channel statist
 
 - `configs/default.yaml`: full training defaults
 - `configs/smoke.yaml`: 20 samples per cell (14/3/3), one epoch
+- `configs/sanity.yaml`: full-data three-epoch GPU sanity run, never a formal score
 - `src/radio_mind/data/`: conversion, manifest, stratified split, datasets, checks
 - `src/radio_mind/models/oshea_cnn.py`: classifier
 - `src/radio_mind/training/trainer.py`: deterministic training, early stop, checkpoints, resume
@@ -71,8 +72,10 @@ export DATA_ROOT=/root/autodl-tmp
 export PYTHONPATH=src
 python scripts/train.py --smoke
 
-# Do not start the 50-epoch run until smoke and a separately identified
-# 3–5 epoch full-data sanity run have passed.
+# Only after smoke passes: full data, three epochs, explicitly tagged sanity.
+python scripts/train.py --config configs/sanity.yaml
+
+# Do not start the 50-epoch run until both checks pass.
 
 # Resume the same run after an interruption
 python scripts/train.py --resume <run_id>

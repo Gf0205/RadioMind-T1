@@ -31,8 +31,8 @@ def _git_commit() -> str:
         return ""
 
 
-def _new_run_id(smoke: bool) -> tuple[str, Path]:
-    tag = "smoke" if smoke else "oshea"
+def _new_run_id(run_mode: str) -> tuple[str, Path]:
+    tag = {"full": "oshea", "smoke": "smoke", "sanity": "sanity"}[run_mode]
     while True:
         run_id = time.strftime("%Y%m%d_%H%M%S") + f"_{tag}"
         out = ROOT / "results" / run_id
@@ -117,7 +117,7 @@ def main():
     cfg = load_config(config_path)
     smoke_mode = cfg.run_mode == "smoke"
     if not args.resume:
-        run_id, out = _new_run_id(smoke_mode)
+        run_id, out = _new_run_id(cfg.run_mode)
     seed_everything(cfg.train.seed, cfg.train.deterministic)
     device = resolve_device(cfg.train.device)
     root = Path(cfg.data.data_root); root = root if root.is_absolute() else ROOT / root
@@ -143,6 +143,9 @@ def main():
         _save_run_config(out, cfg, commit)
     print(f"run_id={run_id} device={device} train={len(train_ds)} val={len(val_ds)} test={len(test_ds)}")
 
+    if device.startswith("cuda"):
+        torch.cuda.reset_peak_memory_stats(device)
+    run_start = time.time()
     train_info = fit(
         model, train_loader, val_loader, device, cfg.train.epochs, cfg.train.lr,
         cfg.train.patience, cfg.train.scheduler, out / "checkpoints", resume_state,
@@ -150,6 +153,9 @@ def main():
     best = torch.load(out / "checkpoints" / "best.pt", map_location=device)
     model.load_state_dict(best["model"])
     metrics = evaluate(model, test_loader, device, SNRS, MODULATIONS)
+    run_wall_time = time.time() - run_start
+    peak_allocated = torch.cuda.max_memory_allocated(device) if device.startswith("cuda") else 0
+    peak_reserved = torch.cuda.max_memory_reserved(device) if device.startswith("cuda") else 0
     metrics.update({
         "run_id": run_id,
         "config": cfg.to_dict(),
@@ -158,6 +164,9 @@ def main():
         "train_time_seconds": train_info["train_time_seconds"],
         "device": device,
         "git_commit": commit,
+        "wall_time_seconds": run_wall_time,
+        "peak_cuda_allocated_bytes": peak_allocated,
+        "peak_cuda_reserved_bytes": peak_reserved,
     })
     save_metrics(metrics, out, MODULATIONS, SNRS)
     save_loss_curve(train_info["history"], out)

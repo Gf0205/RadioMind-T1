@@ -53,7 +53,7 @@ def load_config(path: str | Path | None = None) -> Config:
     with cfg_path.open("r", encoding="utf-8") as f:
         raw = yaml.safe_load(f) or {}
     if "run_mode" not in raw:
-        raise ValueError(f"config must define run_mode: full|smoke ({cfg_path})")
+        raise ValueError(f"config must define run_mode: full|smoke|sanity ({cfg_path})")
     run_mode = str(raw["run_mode"])
     data = DataConfig(**{**asdict(DataConfig()), **raw.get("data", {})})
     model = ModelConfig(**{**asdict(ModelConfig()), **raw.get("model", {})})
@@ -63,8 +63,8 @@ def load_config(path: str | Path | None = None) -> Config:
         data.data_root = env_root
     if data.normalize not in {"none", "global", "rms"}:
         raise ValueError("data.normalize must be one of none|global|rms")
-    if run_mode not in {"full", "smoke"}:
-        raise ValueError("run_mode must be one of full|smoke")
+    if run_mode not in {"full", "smoke", "sanity"}:
+        raise ValueError("run_mode must be one of full|smoke|sanity")
     if train.batch_size <= 0 or train.epochs <= 0 or train.patience <= 0:
         raise ValueError("train.batch_size, train.epochs, and train.patience must be positive")
     if train.lr <= 0:

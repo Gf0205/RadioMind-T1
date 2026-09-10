@@ -254,6 +254,8 @@ def fit(
     if stale >= patience:
         start_epoch = epochs
     for epoch in range(start_epoch, epochs):
+        epoch_start = time.time()
+        epoch_lr = float(opt.param_groups[0]["lr"])
         model.train(); running = seen = 0
         for batch_index, (x, y, _) in enumerate(train_loader):
             x, y = x.to(device), y.to(device); opt.zero_grad(set_to_none=True)
@@ -287,8 +289,15 @@ def fit(
                 val_loss += loss.item() * len(y); val_correct += int((logits.argmax(1) == y).sum()); val_seen += len(y)
         if val_seen == 0:
             raise RuntimeError(f"phase=validation epoch={epoch + 1}: empty DataLoader")
-        val_acc = val_correct / val_seen; row = {"epoch": epoch + 1, "train_loss": running / seen, "val_loss": val_loss / val_seen, "val_accuracy": val_acc}; history.append(row)
-        print(f"epoch {epoch + 1}/{epochs}: train_loss={row['train_loss']:.4f} val_acc={val_acc:.4f}")
+        val_acc = val_correct / val_seen; row = {"epoch": epoch + 1, "train_loss": running / seen, "val_loss": val_loss / val_seen, "val_accuracy": val_acc, "learning_rate": epoch_lr, "epoch_time_seconds": time.time() - epoch_start}; history.append(row)
+        print(
+            f"epoch {epoch + 1}/{epochs}: "
+            f"train_loss={row['train_loss']:.4f} "
+            f"val_loss={row['val_loss']:.4f} "
+            f"val_acc={val_acc:.4f} "
+            f"lr={epoch_lr:.8g} "
+            f"epoch_time={row['epoch_time_seconds']:.1f}s"
+        )
         is_best = False
         if val_acc > best:
             best, best_epoch, stale = val_acc, epoch + 1, 0

@@ -1,0 +1,20 @@
+run_mode: sanity
+data:
+  data_root: ./data
+  split_seed: 20260907
+  normalize: none
+  num_workers: 0
+model:
+  name: oshea_cnn2
+  dropout: 0.6
+train:
+  seed: 20260907
+  batch_size: 512
+  lr: 0.001
+  epochs: 3
+  patience: 8
+  scheduler: cosine
+  device: auto
+  num_workers: 0
+  pin_memory: false
+  deterministic: true
