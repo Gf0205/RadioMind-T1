@@ -95,6 +95,13 @@ class SNRHead(nn.Module):
         super().__init__()
         self.feature_dim = feature_dim
         self.output = nn.Linear(feature_dim, 1)
+        nn.init.kaiming_normal_(
+            self.output.weight,
+            mode="fan_in",
+            nonlinearity="relu",
+        )
+        if self.output.bias is not None:
+            nn.init.zeros_(self.output.bias)
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
         if z.ndim != 2 or z.shape[1] != self.feature_dim:
