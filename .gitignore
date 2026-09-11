@@ -7,7 +7,6 @@ __pycache__/
 /.venv/
 .pytest_cache/
 /.workbuddy/
-/third_party/minimind/
 # The 641 MB source dataset is local-only and must remain read-only.
 *.pkl
 *.pickle

@@ -133,3 +133,11 @@ python scripts/analyze_iq.py \
 ```
 
 RF-Net v1 does not claim calibrated confidence, SOTA performance, or improved modulation accuracy from multitask training. MiniMind, serving frameworks, OOD rejection, and calibration remain outside T2.4.
+
+## MiniMind learning track
+
+MiniMind is included as a pinned Git submodule under `third_party/minimind`; clone this repository with `--recurse-submodules` to obtain the audited upstream revision. The first training exercise is a bounded Google Colab pretraining smoke test, not a formal model run:
+
+- [MiniMind M1 Pretrain Smoke notebook](notebooks/minimind_m1_pretrain_smoke_colab.ipynb)
+
+The notebook keeps Colab's existing CUDA-enabled PyTorch installation, streams only 256 official pretraining examples, performs approximately eight optimizer updates, validates finite loss and checkpoint contents, and optionally archives artifacts to Google Drive.
