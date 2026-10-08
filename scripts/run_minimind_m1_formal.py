@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 PIN = '6fc918beb68a0d8c40452338df6319fe168014ba'
-SOURCE = 'https://huggingface.co/datasets/jingyaogong/minimind_dataset/resolve/main/pretrain_t2t_mini.jsonl'
+SOURCE = os.environ.get('MINIMIND_DATA_URL', 'https://huggingface.co/datasets/jingyaogong/minimind_dataset/resolve/main/pretrain_t2t_mini.jsonl')
 CONTRACT = dict(seed=20260907, hidden_size=768, num_hidden_layers=8, use_moe=False,
                 seq_len=340, micro_batch=8, accumulation=8, epochs=1,
                 learning_rate=5e-4, grad_clip=1.0, dtype='float16',
